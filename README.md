@@ -2,7 +2,7 @@
 
 Local-first account operations for Thomas, initially one operator and approximately 10–15 existing, owned or authorized Reddit accounts. Standalone operation precedes any TOBI integration.
 
-**Status, October 2, 2026:** functional local-tested application, version 0.1.0, including the proxy-first workflow update. GitHub repository was verified empty at bootstrap; this workspace remains an unborn main checkout with origin attached. Source is local/uncommitted, with no push or deployment. Owner acceptance pending.
+**Status, October 2, 2026:** functional local-tested application, version 0.1.0, including the proxy-first workflow update. The source, prototype, tests and project documents are now committed and pushed to GitHub `main`. Initial source delivery: `d0f39334b4e069f1f2f7a4d871088de683355de7`. No deployment; owner acceptance pending. See [Git delivery checkpoint](docs/agent/tasks/RO-GIT-001.md).
 
 **Workspace UI follow-up:** team membership and account access now live in Workspace; Activity is hidden from navigation, with audit retained. Safeguard begins with a shared operational checklist and a policy review marked research ongoing. See [UI checkpoint](docs/agent/tasks/RO-UX-006.md).
 

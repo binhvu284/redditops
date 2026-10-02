@@ -14,7 +14,7 @@ Verified checkout: repository root on the D workspace; `main` is unborn. Remote 
 - `D:\NodeJS\node.exe --test --test-concurrency=1 tests/*.test.mjs`: 8/8 passed, including permissions, encrypted recovery, audit/events, deployment headers and proxy-first failure paths.
 - Latest UI browser evidence is recorded in [RO-UX-006](RO-UX-006.md). No application source changed for Git delivery, so those passing browser gates are reused.
 
-Current checkpoint: ready to inspect staged files, create the initial commit and push without force. Verify the resulting remote hash, then record delivery in the repository documents.
+Delivery complete: initial source commit `d0f39334b4e069f1f2f7a4d871088de683355de7` pushed normally to `origin/main`; `git ls-remote origin refs/heads/main` matched local HEAD exactly. This follow-up documentation commit records the verified delivery. No force push, deployment or TOBI runtime changes.
 
 ## TOBI continuation
 
@@ -23,3 +23,6 @@ Start with [Current work](../../CURRENT_WORK.md), [README](../../../README.md), 
 ## Retrospective
 
 Worked: verify the empty remote independently and keep operator data excluded before staging. Wasted effort: GitHub CLI was not authenticated; Git credential-manager access is separate. Improvement: use Git for authorized delivery and public metadata for repository inspection without extracting credentials.
+
+
+Staged review: 65 files; no operator/generated paths. Handwritten source/docs passed the staged whitespace check. Original font notices, the verbatim embedded font license and supplied source brief retain eight inherited trailing-whitespace lines to preserve upstream/source content. All common credential-signature scans were clear; this is a scoped review, not a comprehensive security audit.
