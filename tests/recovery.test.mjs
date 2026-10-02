@@ -1,0 +1,26 @@
+import test from 'node:test';import assert from 'node:assert/strict';import {mkdtempSync,mkdirSync,readFileSync} from 'node:fs';import path from 'node:path';import {createApp} from '../app/server.mjs';import {backupOpen,backupSeal} from '../app/security.mjs';
+mkdirSync('.qa',{recursive:true});
+test('portable encrypted restore rekeys secrets, rejects foreign owner and rolls back broken imports',async()=>{
+ const password='portable-fixture-passphrase',email='recovery@example.invalid';
+ const apps=[];
+ async function instance(){const app=createApp({dataDir:mkdtempSync(path.resolve('.qa/recovery-')),port:0}),url=await app.listen();apps.push(app);let session;
+  const call=async(p,b)=>{const r=await fetch(url+'/api/'+p,{method:b===undefined?'GET':'POST',headers:{Origin:url,'Content-Type':'application/json',...(session?{Cookie:session.cookie,'X-CSRF-Token':session.csrf}:{})},body:b===undefined?undefined:JSON.stringify(b)});const v=await r.json();return {status:r.status,value:v,cookie:r.headers.get('set-cookie')};};
+  const ok=async(p,b,status=200)=>{const r=await call(p,b);assert.equal(r.status,status,`${p}: ${JSON.stringify(r.value)}`);return r.value;};
+  await ok('setup',{name:'Thomas',email,password,setupToken:readFileSync(app.store.setupFile,'utf8')},201);
+  const login=async()=>{const r=await call('login',{email,password});assert.equal(r.status,200);session={cookie:r.cookie.split(';')[0],csrf:r.value.csrf};await ok('reauth',{password});};await login();return {app,call,ok,login};
+ }
+ try{
+ const a=await instance(),account=await a.ok('accounts',{name:'recover_asset',ownership:true},201);await a.ok('accounts/'+account.id+'/secrets',{oauthToken:'SYNTHETIC_PORTABLE_TOKEN'});const backup=await a.ok('backup',{passphrase:password}),b=await instance();assert.notDeepEqual(a.app.store.key,b.app.store.key);
+ const preview=await b.ok('restore/preview',{backup,passphrase:password});await b.ok('restore/confirm',{previewId:preview.previewId,confirm:'RESTORE'});await b.login();assert.equal((await b.ok('accounts/'+account.id+'/reveal',{field:'oauthToken'})).value,'SYNTHETIC_PORTABLE_TOKEN');assert.equal((await b.ok('state')).accounts[0].paused,true);
+ const payload=await backupOpen(backup,password);payload.users[0].email='foreign@example.invalid';const foreign=await backupSeal(payload,password);assert.equal((await b.call('restore/preview',{backup:foreign,passphrase:password})).status,400);
+ payload.users[0].email=email;payload.assignments.push({account_id:account.id,user_id:payload.users[0].id},{account_id:account.id,user_id:payload.users[0].id});const broken=await backupSeal(payload,password);const v=await b.ok('restore/preview',{backup:broken,passphrase:password});assert.equal((await b.call('restore/confirm',{previewId:v.previewId,confirm:'RESTORE'})).status,500);assert.equal((await b.ok('state')).accounts.length,1);assert.equal((await b.ok('accounts/'+account.id+'/reveal',{field:'oauthToken'})).value,'SYNTHETIC_PORTABLE_TOKEN');
+ }finally{for(const app of apps)await app.close();}
+});
+test('restriction review cannot silently clear a notice; expired reservations remain exclusive',async()=>{
+ const app=createApp({dataDir:mkdtempSync(path.resolve('.qa/coordination-')),port:0}),url=await app.listen(),password='coordination-fixture-passphrase';let o,m;
+ async function call(p,b,s=o){const r=await fetch(url+'/api/'+p,{method:b===undefined?'GET':'POST',headers:{Origin:url,'Content-Type':'application/json',...(s?{Cookie:s.cookie,'X-CSRF-Token':s.csrf}:{})},body:b===undefined?undefined:JSON.stringify(b)});return {status:r.status,value:await r.json(),cookie:r.headers.get('set-cookie')};}
+ async function ok(p,b,s=o,status=200){const r=await call(p,b,s);assert.equal(r.status,status,JSON.stringify(r.value));return r.value;}
+ async function login(email){const r=await call('login',{email,password},null);assert.equal(r.status,200);return {cookie:r.cookie.split(';')[0],csrf:r.value.csrf};}
+ try{await ok('setup',{name:'Thomas',email:'owner@example.invalid',password,setupToken:readFileSync(app.store.setupFile,'utf8')},null,201);o=await login('owner@example.invalid');await ok('reauth',{password});const member=await ok('users',{name:'Maya',email:'member@example.invalid',password},o,201),p=await ok('proxies',{name:'Fixture route',endpoint:'http://192.0.2.1:8080'},o,201),a=await ok('accounts',{name:'restricted_asset',ownership:true,proxyId:p.id},o,201);await ok('accounts/'+a.id+'/configure',{proxyId:p.id,assignedIds:[member.id]});m=await login('member@example.invalid');const good={checks:[true,true,true,true,true],connection:'Good'};await ok('accounts/'+a.id+'/evidence',{...good,restriction:'Suspended',reference:'Fixture notice'},m);assert.equal((await call('accounts/'+a.id+'/evidence',good,m)).status,403);assert.equal((await call('accounts/'+a.id+'/evidence',good)).status,400);await ok('accounts/'+a.id+'/evidence',{...good,clearRestriction:true,reference:'Superseding fixture notice'});await ok('accounts/'+a.id+'/resume',{});await ok('accounts/'+a.id+'/claim',{},m);app.store.db.prepare('UPDATE leases SET expires=0').run();assert.equal((await call('accounts/'+a.id+'/claim',{})).status,409);const l=(await ok('accounts/'+a.id)).lease;assert.equal(l.name,'Maya');await ok('accounts/'+a.id+'/release',{confirmInactive:true});await ok('accounts/'+a.id+'/claim',{});
+ }finally{await app.close();}
+});

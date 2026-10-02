@@ -1,0 +1,4 @@
+import {mkdirSync,cpSync,writeFileSync,readFileSync} from 'node:fs';import {spawnSync} from 'node:child_process';
+const check=spawnSync(process.execPath,['scripts/check.mjs'],{stdio:'inherit'});if(check.status)process.exit(check.status);
+mkdirSync('dist',{recursive:true});for(const dir of ['app','web'])cpSync(dir,'dist/'+dir,{recursive:true});mkdirSync('dist/demo/assets/fonts',{recursive:true});cpSync('demo/assets/fonts/manrope','dist/demo/assets/fonts/manrope',{recursive:true});
+const p=JSON.parse(readFileSync('package.json','utf8'));p.scripts={start:'node app/server.mjs'};writeFileSync('dist/package.json',JSON.stringify(p,null,2));writeFileSync('dist/README.txt','Run node app/server.mjs. Open http://127.0.0.1:4317. Use data/setup-token.txt only for first setup. This local MVP has no live Reddit integration. See the source docs/MVP_RUNBOOK.md before remote deployment.\n');console.log('Build ready in dist/; excludes data, keys, tests and demo records.');
