@@ -138,3 +138,8 @@ th{font-size:var(--text-meta);font-weight:600;letter-spacing:0}td{font-size:var(
 @media(max-width:640px){.access-guide{padding:20px}.access-guide ol{grid-template-columns:1fr}.workspace-access-list,.shared-rules{padding:0 16px}.workspace-account-row{grid-template-columns:minmax(0,1fr) auto;gap:12px}.workspace-account-row>div:nth-child(2),.workspace-account-row>div:nth-child(3){grid-column:1;grid-row:auto}.workspace-account-row>.btn{grid-column:2;grid-row:1 / 4;font-size:11px;padding:9px}.workspace-disclosure-body{grid-template-columns:1fr}.workspace-disclosure>summary{padding:18px 16px;flex-wrap:wrap}.workspace-disclosure>summary .small{margin-left:0;flex-basis:100%}.shared-safeguards .panel-head{align-items:flex-start;flex-direction:column}.shared-safeguards h1{font-size:20px}.shared-rule{grid-template-columns:25px minmax(0,1fr);gap:10px;padding:18px 0}.rule-observations{grid-column:2;flex-direction:row;align-items:center;justify-content:space-between}.rule-observations .small{text-align:left;max-width:none}.policy-review>summary{padding:18px 16px;flex-wrap:wrap}.policy-review>summary .pill{margin-left:30px}.guard-section-heading{align-items:flex-start;flex-direction:column}.workspace-summary .ops-stat strong{font-size:20px}}
 
 .workspace-summary .ops-stat strong,.workspace-team .pill{white-space:nowrap}
+/* Backend route diagnostics use the existing operational colors. */
+.proxy-feedback{margin:14px 0;padding:12px 14px;border:1px solid var(--border);border-radius:10px;background:var(--surface);overflow-wrap:anywhere}
+.proxy-feedback p{margin:4px 0 0;font-size:13px;line-height:1.6}
+.proxy-feedback.success{border-left:3px solid #14b8a6}
+.proxy-feedback.attention{border-left:3px solid #f59e0b}

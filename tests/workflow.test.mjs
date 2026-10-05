@@ -37,14 +37,14 @@ test('local configuration persists requested location; manual reports cannot ena
   const record=await call('accounts',{name:'workflow_asset',ownership:true,proxyId:p.body.id,firstVerifiedAt:'2020-01-01',mode:'Approved live'},owner);assert.equal(record.status,201);const id=record.body.id;assert.equal(record.body.firstVerifiedAt,null);
   await call('accounts/'+id+'/evidence',{checks:[true,true,true,true,true],connection:'Good'},owner);
   assert.equal((await call('accounts/'+id+'/open',{},owner)).body.code,'CAPABILITY_UNAVAILABLE');
-  assert.equal((await call('proxies/'+p.body.id+'/check',{},owner)).body.code,'CAPABILITY_UNAVAILABLE');
-  const a=(await call('accounts/'+id,undefined,owner)).body;assert.equal(a.health.source,'Manual report');assert.equal(a.firstVerifiedAt,null);assert.equal(a.proxy.observedIp,null);assert.equal(a.proxy.status,'Unknown');assert.equal(a.lease,null);
+  assert.equal((await call('proxies/'+p.body.id+'/check',{consent:true},owner)).body.errorCode,'PROXY_DESTINATION');
+  const a=(await call('accounts/'+id,undefined,owner)).body;assert.equal(a.health.source,'Manual report');assert.equal(a.firstVerifiedAt,null);assert.equal(a.proxy.observedIp,null);assert.equal(a.proxy.status,'Failed');assert.equal(a.lease,null);
   await call('reauth',{password},owner);const member=(await call('users',{name:'Maya',email:'workflow-member@example.invalid',password},owner)).body;const m=await login('workflow-member@example.invalid');
   assert.equal((await call('proxies/'+p.body.id+'/check',{},m)).status,404);assert.equal((await call('accounts/'+id+'/open',{},m)).status,404);
   await call('accounts/'+id+'/configure',{proxyId:p.body.id,assignedIds:[member.id]},owner);
-  assert.equal((await call('proxies/'+p.body.id+'/check',{},m)).body.code,'CAPABILITY_UNAVAILABLE');assert.equal((await call('proxies',config,m)).status,403);
+  assert.equal((await call('proxies/'+p.body.id+'/check',{},m)).body.code,'PROBE_CONSENT');assert.equal((await call('proxies',config,m)).status,403);
   assert.equal((await call('proxies/'+p.body.id+'/configure',config,m)).status,403);
-  assert.equal((await call('accounts/'+id+'/claim',{},owner)).status,200);
+  assert.equal((await call('accounts/'+id+'/claim',{},owner)).status,409);
   assert.equal((await call('proxies/'+p.body.id+'/configure',{...config,endpoint:'http://192.0.2.20:8080'},owner)).status,200);
   let edited=(await call('accounts/'+id,undefined,owner)).body;assert.equal(edited.paused,true);assert.equal(edited.lease,null);assert.equal(edited.health.score,null);
   await call('accounts/'+id+'/evidence',{checks:[true,true,true,true,true],connection:'Good',restriction:'Suspended',reference:'Synthetic notice'},owner);

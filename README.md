@@ -8,7 +8,7 @@ Local-first account operations for Thomas, initially one operator and approximat
 
 ## Run the application
 
-**October 2 UI update:** guided Proxy → Accounts → Safeguard flows, local provider/location configuration and owner route editing. Choose **Try workflow** to test sign-in, proxy failures, recovery and the 24-hour milestone with isolated Mock data. Real proxy checks and browser launch remain Unavailable. See [workflow implementation and checks](docs/agent/tasks/RO-PROXY-UX-001.md).
+**October 2 proxy update:** guided Proxy → Accounts → Safeguard flows now include HTTP/HTTPS/SOCKS5 backend diagnostics, encrypted proxy authentication and opt-in monitoring. Actual provider verification is pending; browser launch/enforced routing remain Unavailable. Choose **Try workflow** for isolated Mock sign-in/faults/24-hour previews. See [proxy connectivity](docs/agent/tasks/RO-PROXY-001.md) and [earlier workflow implementation](docs/agent/tasks/RO-PROXY-UX-001.md).
 
 Requires verified Node 22.14.0 (Node 22, below 23); no npm packages to install.
 
@@ -20,7 +20,7 @@ Open **http://127.0.0.1:4317**. First setup uses the single-use key in `data/set
 
 Implemented: real login and server-side account permissions; persistent account/client/proxy configuration and assignments; archive/audit retention; manual evidence/Health/Unknown/Stale and pause/resume; exclusive manual reservations; internal realtime events/alerts; owner reauthentication, encrypted protected fields, encrypted backup and validated transactional restore with portable key recovery. New workspaces have no seeded accounts.
 
-Reddit live integration, real avatars, proxy probes and browser companion remain **Unavailable**. Manual reports and reservations do not establish platform facts or enforced browser routing. Node SQLite is experimental in the verified runtime. Default loopback operation is tested; public TLS/proxy deployment and OS key protection remain unverified. Optional HTTPS canonical-origin/Secure-cookie configuration is header-tested. Password change/invitation delivery and large-history recovery remain later work.
+Reddit live integration, real avatars and browser companion remain **Unavailable**. Proxy diagnostics are available after explicit consent; they do not route an ordinary Reddit browser or start an account connection/24-hour timer. Manual reports and reservations do not establish platform facts or enforced browser routing. Node SQLite is experimental in the verified runtime. Default loopback operation is tested; public TLS/proxy deployment and OS key protection remain unverified. Optional HTTPS canonical-origin/Secure-cookie configuration is header-tested. Password change/invitation delivery and large-history recovery remain later work.
 
 Verification: `npm run check`, `npm test`, `npm run build`. Build creates ignored `dist/` without keys/data/tests. Browser developer gate: `node scripts/browser-check.mjs` using existing local Edge/Playwright; it is not a runtime dependency. Runtime source: `app/` and `web/`.
 

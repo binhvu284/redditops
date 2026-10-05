@@ -1,11 +1,12 @@
 # Current work
 
-- **Active task:** [RO-GIT-001 — GitHub delivery](agent/tasks/RO-GIT-001.md), October 2, 2026. Delivery complete; remote source commit verified.
-- **Current state:** Source, prototype, tests, assets and project documents pushed to https://github.com/binhvu284/redditops on `main`. Build and 8/8 tests passed before delivery. Operator data, keys, environment files, fixtures and build output are excluded.
-- **Latest UI:** [RO-UX-006](agent/tasks/RO-UX-006.md) delivered Workspace team/account access and the shared Safeguard checklist; responsive owner/member and Mock browser checks passed. Owner visual acceptance is pending.
-- **Next action:** TOBI reads this checkpoint, README and AGENTS.md, then follows the linked task documents to propose the next bounded proxy/browser integration task. No automatic TOBI monitor was configured by this Git delivery.
-- **Boundary:** Local permission management works. Live Reddit use, managed browser/proxy enforcement and automatic compliance assessment remain Unavailable. No deployment or operator-data reset.
-- **Previous workflow:** [RO-PROXY-UX-001](agent/tasks/RO-PROXY-UX-001.md) remains implemented; guided setup, breadcrumb progress and isolated Mock walkthrough are preserved.
+- **Active task:** [RO-PROXY-001 — local proxy connectivity](agent/tasks/RO-PROXY-001.md), October 2, 2026. Thomas deferred cloud hosting and requested proxy connection first.
+- **Current state:** HTTP/HTTPS CONNECT and SOCKS5 backend diagnostics, encrypted proxy credentials, owner configuration, assigned-member checks, source/IP/country/time outcomes and opt-in monitoring are implemented locally. Failure/IP-change/stale gates pause local account coordination; successful checks require deliberate account resume. Managed Reddit browser routing and sign-in remain Unavailable.
+- **Verification:** Full suite 13/13 and final focused proxy suite 5/5 passed; three Edge browser gates and syntax/build passed. Local app and new proxy UI module return HTTP 200 at port 4317. These are local/fixture results; no operator-provider connection has been verified.
+- **Next action:** Thomas enters provider connection details privately in Proxy → Add proxy and runs the consented diagnostic; an actual provider has not yet been verified. Cloud [research](CLOUD_DEPLOYMENT_OPTIONS.md) remains available for a later authorized deployment.
+- **Git delivery:** Source and earlier checkpoints are synced at `7567b335f5c828eaceb6c05bea83542126890f55` on GitHub main; [RO-GIT-001](agent/tasks/RO-GIT-001.md). This research's document changes are local and uncommitted/unpushed.
+- **Latest UI:** [RO-UX-006](agent/tasks/RO-UX-006.md) delivered Workspace team/account access and the shared Safeguard checklist; owner acceptance pending. [RO-PROXY-UX-001](agent/tasks/RO-PROXY-UX-001.md) guided setup/Mock workflow is preserved.
+- **Boundary:** Local proxy implementation is uncommitted/unpushed. No cloud hosting, payment, real Reddit operations or operator-data replacement. Live diagnostic requests occur only after route-specific consent/monitoring opt-in. Native transports are tested with isolated local fixtures; real provider and browser enforcement are separate verification/integration steps.
 
 ## Previous application checkpoint
 

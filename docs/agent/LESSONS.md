@@ -8,6 +8,6 @@ Evidence: [RO-PLAN-001](tasks/RO-PLAN-001.md), October 1, 2026.
 
 4. Public documentation screenshots and live authenticated layouts are different evidence. RO-DEMO-002 used the former honestly when the public ChatGPT capture returned only an access/loading surface; inspecting the search dialog revealed styling gaps that interaction checks alone did not catch.
 
-5. Account UX requires scoped views and evidence invalidation: RO-UX-005 verified member isolation and retained archive audit; RO-PROXY-UX-001 verifies that route edits invalidate connection readiness without clearing restriction notices. Test zero Mock API writes and latched recovery separately from screenshot appearance; keep simulated network blocking distinct from server/browser enforcement. RO-UX-006 adds evidence that multi-account UI fixtures need account-specific selectors and exact email comparisons to avoid false permission failures.
+5. Account/proxy UX requires scoped views and evidence invalidation: route edits must retain restriction notices; real route failures must latch local pause independently of Mock behavior and browser enforcement. RO-PROXY-001 proves each native transport through local TLS/tunnel fixtures, rejects direct fallback and rekeys proxy credentials during portable recovery. Revalidate permissions/configuration after asynchronous probes; use account-specific browser selectors and distinguish fixture checks from actual provider verification.
 
 These observations do not change authority, permissions or the skill register.
