@@ -16,6 +16,12 @@ Verified checkout: repository root on the D workspace; `main` is unborn. Remote 
 
 Delivery complete: initial source commit `d0f39334b4e069f1f2f7a4d871088de683355de7` pushed normally to `origin/main`; `git ls-remote origin refs/heads/main` matched local HEAD exactly. This follow-up documentation commit records the verified delivery. No force push, deployment or TOBI runtime changes.
 
+## October 6 follow-up delivery
+
+Thomas requested pushing all pending local work to main. Verified root, origin `https://github.com/binhvu284/redditops.git`, branch `main` and remote unchanged at `7567b33` before committing. A scan of pending changes found only synthetic fixture passphrases and the documented disposable localhost TLS key in `tests/fixtures/`; operator `data/`, `.qa/` and `dist/` stay ignored.
+
+Checks on the delivered tree: `scripts/check.mjs`, `scripts/build.mjs`, `git diff --check`, full suite 13/13, and `proxy-browser-check`, `browser-check` and `workflow-browser-check` all passed. Commits pushed normally: `9dc70b8` (cloud research) and `bb79d501448bacc27b05cc233e0382ba685783ae` (proxy diagnostics); `origin/main` matched local HEAD. Git reports dubious ownership because `.git` belongs to another Windows user; commands used a per-command `safe.directory` override without changing global configuration. No deployment or real provider verification.
+
 ## TOBI continuation
 
 Start with [Current work](../../CURRENT_WORK.md), [README](../../../README.md), [AGENTS.md](../../../AGENTS.md) and the linked task checkpoint. The repository snapshot omits operator data, credentials, ignored fixtures and full chat history. TOBI monitoring/configuration is not established by a Git push and was not changed in this task.
