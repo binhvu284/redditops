@@ -40,6 +40,7 @@ Latest prototype: ten business account assets, primary Overview/Accounts/Proxy/S
 | --- | --- |
 | [AGENTS.md](AGENTS.md) | Sole project policy and pending skill register |
 | [Current work](docs/CURRENT_WORK.md) | Current state and one next action |
+| [Cloud deployment options](docs/CLOUD_DEPLOYMENT_OPTIONS.md) | Researched free/low-cost hosting choices; no deployment activated |
 | [Product specification](docs/PROJECT_SPEC.md) | Required scope, proposed MVP and capability matrix |
 | [Architecture](docs/ARCHITECTURE.md) | Proposed modules, data model, contracts and recovery |
 | [User flows](docs/USER_FLOWS.md) | Screen map, visual direction and failure states |
