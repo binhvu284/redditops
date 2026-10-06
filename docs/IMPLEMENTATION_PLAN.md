@@ -1,5 +1,15 @@
 # Implementation backlog
 
+## Proxy provider iteration — October 6, 2026
+
+Evidence: [RO-PROXY-BD-001](agent/tasks/RO-PROXY-BD-001.md); guide: [Proxy providers](PROXY_PROVIDERS.md).
+
+| ID | Dependency | Acceptance | Verification | Status |
+| --- | --- | --- | --- | --- |
+| RO-PROXY-BD-001 | RO-PROXY-001 | Bright Data preset with documented endpoint/flags, encrypted zone credentials, test session or allocated IP, provider-reported location, consented stability test, handshake-only Reddit reachability and fixed provider error messages | Unit/transport/API tests, Bright Data Edge gate and existing gates | Implemented locally; real zone unverified |
+| RO-PROXY-API-001 | RO-PROXY-BD-001; Thomas's approval; provider API keys entered by Thomas | API-first provider connection: owner-only encrypted Bright Data/Proxy-Seller account keys, read-only validation, import zones/lists/static proxies into routes, scheduled account health (balance, traffic left, expiry, unavailable IPs) with alerts and pauses, and per-action confirmation for any provider write. Never orders or purchases. | Fixture API servers for success/expired/insufficient-permission/rate-limit/key-in-URL redaction; browser gate; live read-only check by Thomas | Proposed |
+| RO-PROXY-PS-001 | RO-PROXY-BD-001; Thomas chooses Proxy-Seller | Preset that parses one Proxy-Seller line and composes residential `_c_US_s_…_ttl_…` logins | Same pattern as RO-PROXY-BD-001 | Guided static preset and official mark delivered; line parsing/residential composition proposed |
+
 ## Delivered local workflow iteration — October 2, 2026
 
 Evidence: [RO-PROXY-UX-001](agent/tasks/RO-PROXY-UX-001.md). Delivery status applies to local configuration and Mock UX, not live Reddit access.

@@ -143,3 +143,42 @@ th{font-size:var(--text-meta);font-weight:600;letter-spacing:0}td{font-size:var(
 .proxy-feedback p{margin:4px 0 0;font-size:13px;line-height:1.6}
 .proxy-feedback.success{border-left:3px solid #14b8a6}
 .proxy-feedback.attention{border-left:3px solid #f59e0b}
+
+/* Bright Data preset and stability test (RO-PROXY-BD-001) */
+.preset-switch{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 14px}
+.preset-switch .btn{flex:1 1 140px}
+.stability-box{border-top:1px solid var(--line);margin-top:18px;padding-top:14px}
+.stability-box h3{font-size:14px;margin-bottom:4px}
+.form-note code{font-size:11px;background:var(--soft);padding:1px 4px;border-radius:4px}
+/* Bright Data proxy type cards and Residential targeting (RO-PROXY-BD-001) */
+.bd-form .bd-section{border:0;padding:0;margin:22px 0 0;min-width:0}
+.bd-section legend{display:flex;align-items:center;gap:8px;font-size:13px;font-weight:650;margin-bottom:2px;padding:0}
+.bd-section legend span{display:inline-grid;place-items:center;width:20px;height:20px;border-radius:50%;background:var(--blue-soft);color:var(--blue);font-size:11px;font-weight:650}
+.type-cards{display:grid;gap:8px;margin-top:8px}
+.type-card{display:flex;gap:12px;align-items:flex-start;border:1px solid var(--line);border-radius:12px;padding:12px 14px;cursor:pointer;background:var(--paper);transition:border-color .15s,box-shadow .15s,background .15s}
+.type-card:hover{border-color:var(--control)}
+.type-card input{margin-top:3px;accent-color:var(--blue);flex:none;width:16px;height:16px}
+.type-card:has(input:checked){border-color:var(--blue);box-shadow:0 0 0 1px var(--blue);background:color-mix(in srgb,var(--blue-soft) 55%,var(--paper))}
+.type-card:has(input:focus-visible){outline:2px solid var(--blue);outline-offset:2px}
+.type-card-body{display:grid;gap:3px;min-width:0}
+.type-card-body strong{font-size:13px}
+.type-card-body>span{font-size:12px;color:var(--muted);line-height:1.5}
+.type-chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:4px}
+.type-chips .pill{font-size:11px;padding:2px 7px;white-space:normal}
+.bd-callout{border:1px solid color-mix(in srgb,var(--amber) 30%,transparent);background:var(--amber-soft);border-radius:10px;padding:12px 14px;margin-top:12px;font-size:12px;line-height:1.6}
+.bd-callout.calm{border-color:color-mix(in srgb,var(--blue) 25%,transparent);background:var(--blue-soft)}
+.bd-callout strong{display:block;margin-bottom:4px;font-size:12.5px}
+.bd-callout ul{margin:0;padding-left:18px;display:grid;gap:4px;list-style:disc}
+.bd-callout p{margin:0}
+.bd-form .bd-only{display:none}
+.bd-form:has([name=bdNetwork][value=residential]:checked) .bd-only.residential,
+.bd-form:has([name=bdNetwork][value=isp]:checked) .bd-only.isp,
+.bd-form:has([name=bdNetwork][value=datacenter]:checked) .bd-only.datacenter,
+.bd-form:has([name=bdNetwork][value=isp]:checked) .bd-only.static,
+.bd-form:has([name=bdNetwork][value=datacenter]:checked) .bd-only.static{display:block}
+/* Provider identifiers: unchanged official marks beside the provider name (web/assets/providers/PROVENANCE.md) */
+.provider-logo{width:20px;height:20px;object-fit:contain;flex:none;vertical-align:-4px;margin-right:8px;border-radius:4px}
+.preset-option{display:inline-flex;align-items:center;justify-content:center;gap:8px}
+.preset-option .provider-logo{width:18px;height:18px;margin:0}
+.wizard-route .provider-logo{width:18px;height:18px;vertical-align:-3px}
+.route-facts .reach-blocked{color:var(--coral)}

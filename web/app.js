@@ -44,9 +44,24 @@ async function confirmPassword(){openDialog('Confirm workspace password',form('r
 function showWizard(){openDialog(wizard.type==='proxy'?'Set up a US proxy':'Connect your account',wizardHTML(wizard,{field,select,form,data,preview}));dialog.classList.add('workflow-dialog');}
 function startProxyWizard(p=null){wizard={type:'proxy',step:p?2:1,proxy:p,ready:false,result:null};showWizard();}
 function startAccountWizard(a=null){wizard={type:'account',step:a?2:1,account:a,ready:false,result:null};showWizard();}
+// Bright Data preset: the server composes endpoint and username flags; secrets are cleared after the request.
+async function brightDataSubmit(activeWizard,values){
+ const residential=values.bdNetwork==='residential',protocol=values.bdProtocol==='socks5:'?'socks5:':'http:',ipMode=!residential&&values.bdIpMode==='ip'?'ip':'session',ip=values.bdIp?.trim()||'',zip=values.bdZip?.trim()||'';
+ if(residential&&zip&&!/^\d{5}$/.test(zip))throw Error('Enter a 5-digit US ZIP code, or leave it blank.');
+ if(ipMode==='ip'&&!/^\d{1,3}(\.\d{1,3}){3}$/.test(ip))throw Error('Enter one IPv4 address from the zone’s allocated IP list, or choose a test session IP.');
+ const config={name:values.name,preset:'brightdata',targetCity:values.targetCity,targetCountry:'US',brightData:{username:values.bdUsername?.trim()||'',network:values.bdNetwork,protocol,ipMode,ip:ipMode==='ip'?ip:null,newSession:values.bdNewSession==='on',...(residential?{state:values.bdState||null,city:values.bdCity?.trim()||null,zip:zip||null,stickyPeer:values.bdStickyPeer==='on'}:{})},password:values.proxyPassword||'',monitorEnabled:values.monitorEnabled==='on',probeConsent:values.probeConsent==='on'};
+ const keep={preset:'brightdata',name:values.name,bdNetwork:values.bdNetwork,bdProtocol:protocol,bdIpMode:ipMode,bdIp:ip,bdState:values.bdState,bdCity:values.bdCity,bdZip:zip,bdStickyPeer:values.bdStickyPeer==='on',monitorEnabled:config.monitorEnabled};
+ const clear=()=>{config.password='';config.brightData.username='';};
+ if(preview){const old=activeWizard.proxy;activeWizard.proxy={name:config.name,endpoint:protocol+'//brd.superproxy.io:'+(protocol==='socks5:'?22228:44445),provider:'Bright Data',brightData:{zone:'mock_zone',customerHint:'Mock',network:values.bdNetwork,protocol,ipMode,ip:config.brightData.ip,session:ipMode==='session'?'mock':null,state:config.brightData.state||null,city:config.brightData.city?.toLowerCase().replace(/[\s.'-]/g,'')||null,zip:config.brightData.zip||null,stickyPeer:!!config.brightData.stickyPeer},targetCity:config.targetCity,targetCountry:'US',authMode:'password',monitorEnabled:false,id:old?.id||'mock-proxy-'+Date.now(),status:'Unknown',source:'Mock · configuration',checkedAt:null,expectedIp:config.brightData.ip||'203.0.113.44'};if(old){data.proxies[data.proxies.findIndex(p=>p.id===old.id)]=activeWizard.proxy;for(const a of data.accounts.filter(a=>a.proxyId===old.id))mockFault(data,a,'proxy-failed');}else data.proxies.push(activeWizard.proxy);addMockLog(data,null,'Mock proxy configured');return true;}
+ if(!await confirmPassword()){clear();activeWizard.draft=keep;if(wizard===activeWizard)showWizard();return false;}
+ try{activeWizard.proxy=await api(activeWizard.proxy?'proxies/'+activeWizard.proxy.id+'/configure':'proxies',config);}
+ catch(error){clear();activeWizard.draft=keep;if(wizard===activeWizard){showWizard();dialog.querySelector('.form-error').textContent=error.message;}return false;}
+ clear();activeWizard.draft=null;await refresh();return true;
+}
 async function workflowSubmit(action,values){
  const activeWizard=wizard;if(!activeWizard)throw Error('Setup was closed. Start again to continue.');
- if(action==='proxy-setup'){
+ if(action==='proxy-setup'&&values.preset==='brightdata'){if(!await brightDataSubmit(activeWizard,values))return;}
+ else if(action==='proxy-setup'){
    const port=Number(values.port);if(!Number.isInteger(port)||port<1||port>65535)throw Error('Enter a port between 1 and 65535.');
    const host=values.host?.trim();if(!host||/[\s/@?#]/.test(host))throw Error('Copy only the server address, without credentials or a path.');
    let parsed;try{parsed=new URL(values.protocol+'//'+host+':'+port);}catch{throw Error('Enter a valid server address.');}
@@ -70,7 +85,17 @@ async function workflowAction(action,id,target){
  if(action==='add-account'){startAccountWizard();return true;}
  if(action==='inspect-proxy'){const p=data.proxies.find(p=>p.id===id);if(p)startProxyWizard(p);return true;}
  if(action==='open-account'){const a=data.accounts.find(a=>a.id===id);if(a)startAccountWizard(a);return true;}
- if(action==='wizard-edit'){if(!wizard||!owner())return true;const p=wizard.proxy,url=new URL(p.endpoint);wizard.draft={name:p.name,provider:p.provider||'',targetCity:p.targetCity||'',expectedIp:p.expectedIp||'',protocol:url.protocol,host:url.hostname,port:url.port||(url.protocol==='https:'?'443':'80'),authMode:p.authMode||'none',monitorEnabled:p.monitorEnabled};wizard.step=1;wizard.result=null;wizard.ready=false;showWizard();return true;}
+ if(action==='proxy-preset'){if(!wizard||wizard.type!=='proxy'||wizard.step!==1)return true;const f=dialog.querySelector('[data-form="proxy-setup"]'),v=f?Object.fromEntries(new FormData(f)):{};wizard.draft={...(wizard.draft||{}),preset:['brightdata','proxyseller'].includes(id)?id:'other',name:v.name??wizard.draft?.name,targetCity:v.targetCity??wizard.draft?.targetCity};showWizard();return true;}
+ if(action==='wizard-stability'){
+   if(!wizard||preview||wizard.type!=='proxy'||!wizard.proxy||target.disabled)return true;const activeWizard=wizard;
+   if(!dialog.querySelector('[name="stabilityConsent"]')?.checked){activeWizard.ready=false;activeWizard.result='Confirm the repeated diagnostic requests before testing.';showWizard();return true;}
+   const reddit=!!dialog.querySelector('[name="redditReach"]')?.checked;target.disabled=true;target.textContent='Testing… about 20 seconds';
+   try{activeWizard.proxy=await api('proxies/'+activeWizard.proxy.id+'/stability',{consent:true,reddit});activeWizard.ready=activeWizard.proxy.status==='Available';activeWizard.result=null;await refresh();}
+   catch(error){activeWizard.ready=false;activeWizard.result=error.message;}
+   if(wizard===activeWizard)showWizard();return true;
+ }
+ if(action==='wizard-edit'&&wizard?.proxy?.brightData){if(!owner())return true;const p=wizard.proxy;wizard.draft={preset:'brightdata',name:p.name,bdNetwork:p.brightData.network,bdProtocol:p.brightData.protocol,bdIpMode:p.brightData.ipMode,bdIp:p.brightData.ip||'',bdState:p.brightData.state||'',bdCity:p.brightData.city||'',bdZip:p.brightData.zip||'',bdStickyPeer:p.brightData.stickyPeer!==false,monitorEnabled:p.monitorEnabled};wizard.step=1;wizard.result=null;wizard.ready=false;showWizard();return true;}
+ if(action==='wizard-edit'){if(!wizard||!owner())return true;const p=wizard.proxy,url=new URL(p.endpoint);wizard.draft={preset:/proxy-?seller/i.test(p.provider||'')?'proxyseller':'other',name:p.name,provider:p.provider||'',targetCity:p.targetCity||'',expectedIp:p.expectedIp||'',protocol:url.protocol,host:url.hostname,port:url.port||(url.protocol==='https:'?'443':'80'),authMode:p.authMode||'none',monitorEnabled:p.monitorEnabled};wizard.step=1;wizard.result=null;wizard.ready=false;showWizard();return true;}
  if(action==='wizard-check'){
    if(!wizard||target.disabled)return true;const activeWizard=wizard;target.disabled=true;target.textContent='Checking…';const scenario=dialog.querySelector('[name="scenario"]')?.value||'success';
    try{if(preview){if(activeWizard.type==='proxy'){mockProxyCheck(activeWizard.proxy,scenario);activeWizard.ready=activeWizard.proxy.status==='Available';activeWizard.result=activeWizard.ready?'Synthetic US route, fixed IP and connection passed.':scenario==='wrong-country'?'The synthetic country is not US. Choose a US route and recheck.':scenario==='ip-changed'?'The synthetic exit IP changed. Access remains blocked.':'The synthetic proxy did not respond. Check the server details and retry.';addMockLog(data,null,'Mock proxy check',activeWizard.ready?'success':'failed');}else{const p=data.proxies.find(p=>p.id===activeWizard.account.proxyId);if(!p)throw Error('Assign a Mock proxy first.');mockProxyCheck(p,'success');activeWizard.account.proxy={...p};activeWizard.ready=true;activeWizard.result='Mock preflight passed. Sign-in / deliberate Continue is still required; no real browser is opened.';}}
