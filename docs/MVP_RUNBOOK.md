@@ -8,13 +8,34 @@ Daily screens retain the approved CRM visual direction. `demo/reddit-ops-demo.ht
 
 ## Start and first setup
 
-From the repository root, run `npm start` (or `node app/server.mjs`), then open **http://127.0.0.1:4317**. Use the exact 127.0.0.1 URL; other Host values are rejected. Windows users can also use `Start-Reddit-Ops.ps1`, which prints the URL and keeps the server in that terminal until Ctrl+C.
+Open a terminal in the Reddit Ops folder and run `redditops` (after a one-time `npm link`), or `npm start`. Then open the printed address, normally **http://127.0.0.1:4317**. Use the exact 127.0.0.1 URL; other Host values are rejected. The server stays in that terminal until Ctrl+C.
 
-First launch creates `data/ops.sqlite`, `data/vault.key` and `data/setup-token.txt`. Read the setup key locally and paste it into the first-run form; choose your own email/password. The key is single-use and removed after setup. No default password or pre-created owner exists. Do not share the key or paste it into chat.
+First launch creates `data/ops.sqlite`, `data/vault.key` and `data/setup-token.txt`. Run `redditops setup-key` to show the one-time key and paste it into the first-run form; choose your own email/password. The key is single-use and removed after setup. No default password or pre-created owner exists. Do not share the key or paste it into chat.
 
 Do not move, remove or edit `data/vault.key`; protected fields rely on it. Keep the data directory private to the OS user. Unix file modes are requested, but Windows access control follows the host directory ACL; this implementation does not configure Windows credential protection. The key is excluded from Git, ordinary API responses, logs and release builds. Disk/OS compromise is outside this application's vault boundary.
 
 Use `REDDIT_OPS_DATA_DIR` for a different local data directory and `REDDIT_OPS_PORT` for a different loopback port. Keep both on D on this machine. Initial setup and daily use require no database or infrastructure commands.
+
+## Run anywhere (`redditops` command)
+
+One entry point, `bin/redditops.mjs`, serves every device and host (RO-CLI-001):
+
+| Where | Command |
+| --- | --- |
+| Any device with the source and Node 22.14+ (below 23) | Once: `npm link` in the repository folder. Then `redditops` in any terminal (PowerShell, cmd, Git Bash, macOS, Linux). |
+| Without installing the command | `npm start`, `node bin/redditops.mjs`, or `.\redditops` on Windows |
+| Cloud host | Build/start command `npm start`; no install step or packages are needed |
+
+`redditops` runs the Reddit Ops checkout that contains the current folder; outside any checkout it runs the linked one. It refuses other Node versions with an install hint. Options: `--port`, `--host`, `--data-dir`, `--origin`; `redditops setup-key` prints the pending one-time key; `redditops --help`. Remove the global command with `npm unlink -g reddit-ops`.
+
+Cloud configuration (environment variables):
+
+- `PORT` (set by most hosts) or `REDDIT_OPS_PORT`: listening port.
+- `REDDIT_OPS_ORIGIN=https://your-domain`: required for public access. When set, the host defaults to `0.0.0.0`; Host/Origin checks use this address and session cookies become `Secure`. TLS must be terminated by the host or a reverse proxy.
+- `REDDIT_OPS_DATA_DIR`: point to a persistent volume. Ephemeral disks lose the database and `vault.key`, which makes protected fields unrecoverable without an encrypted backup.
+- `REDDIT_OPS_HOST`: override the interface. Any non-loopback value without `REDDIT_OPS_ORIGIN` is refused, so Reddit Ops is never exposed over plain HTTP by accident.
+
+On a fresh cloud instance, run `redditops setup-key` (or `node bin/redditops.mjs setup-key`) in the host's shell to read the one-time key. Platform health checks must use the public host name, because other Host values return 403. Public deployment remains a separate, owner-approved step ([cloud options](CLOUD_DEPLOYMENT_OPTIONS.md)); this command makes the start procedure identical but does not deploy anything.
 
 ## Daily operation
 

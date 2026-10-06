@@ -12,13 +12,19 @@ Local-first account operations for Thomas, initially one operator and approximat
 
 **October 6 provider update:** Proxy → Add proxy → **Bright Data** offers Residential/Datacenter/ISP cards and composes the US route (`brd.superproxy.io:44445`, Residential state/city/ZIP with a one-device session, or ISP test session/allocated IP). It shows the provider-reported location and runs a consented 5-check stability test with optional handshake-only Reddit reachability. **Proxy-Seller** has a guided preset. Official provider marks have [provenance](web/assets/providers/PROVENANCE.md). See [Proxy providers](docs/PROXY_PROVIDERS.md) and [RO-PROXY-BD-001](docs/agent/tasks/RO-PROXY-BD-001.md).
 
-Requires verified Node 22.14.0 (Node 22, below 23); no npm packages to install.
+Requires verified Node 22.14.0 (Node 22, below 23); no npm packages to install. On each device, once, in the repository folder:
 
-```powershell
-npm start
+```sh
+npm link
 ```
 
-Open **http://127.0.0.1:4317**. First setup uses the single-use key in `data/setup-token.txt`; choose your own email/password. Keep the key private and do not paste it into chat. Windows launcher: `Start-Reddit-Ops.ps1`. See [MVP runbook](docs/MVP_RUNBOOK.md) and [MVP verification](docs/agent/tasks/RO-MVP-001.md).
+Then open a terminal in the Reddit Ops folder and run:
+
+```sh
+redditops
+```
+
+Open the printed address, normally **http://127.0.0.1:4317**. The same entry point runs as `npm start`, `node bin/redditops.mjs`, `.\redditops` (Windows, without `npm link`) or `Start-Reddit-Ops.ps1`. First setup uses the one-time key shown by `redditops setup-key`; choose your own email and password, and never paste the key into chat. `redditops --help` lists the options. Cloud hosts use `npm start` with `PORT`, `REDDIT_OPS_ORIGIN` and `REDDIT_OPS_DATA_DIR` ([run anywhere](docs/MVP_RUNBOOK.md#run-anywhere-redditops-command)). See [MVP runbook](docs/MVP_RUNBOOK.md) and [MVP verification](docs/agent/tasks/RO-MVP-001.md).
 
 Implemented: real login and server-side account permissions; persistent account/client/proxy configuration and assignments; archive/audit retention; manual evidence/Health/Unknown/Stale and pause/resume; exclusive manual reservations; internal realtime events/alerts; owner reauthentication, encrypted protected fields, encrypted backup and validated transactional restore with portable key recovery. New workspaces have no seeded accounts.
 

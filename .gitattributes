@@ -1,0 +1,3 @@
+# Keep the command entry points runnable on every platform.
+bin/* text eol=lf
+*.cmd text eol=crlf
